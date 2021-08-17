@@ -1,5 +1,8 @@
 const express = require('express');
 const app = express();
+const bcrypt = require('bcrypt-nodejs');
+const cors = require('cors');
+
 
 app.use(express.json());
 
@@ -9,21 +12,30 @@ const database = {
         {
             id: '123',
             name: 'John',
-            email: 'john@gmail.com',
             password: 'cookies',
+            email: 'john@gmail.com',
             entries: 0,
             joined: new Date()
         },
         {
             id: '124',
             name: 'Sally',
-            email: 'sally@gmail.com',
             password: 'bananas',
+            email: 'sally@gmail.com',
             entries: 0,
             joined: new Date()
         }
+    ],
+    login: [
+        {
+            id: '987',
+            hash: '',
+            email: 'john@gmail.com'
+        }
     ]
 };
+
+app.use(cors());
 
 app.get('/', (req, res) => {
     res.send(database.users);
@@ -44,7 +56,6 @@ app.post('/register', (req, res) => {
         id: '125',
         name: name,
         email: email,
-        password: password,
         entries: 0,
         joined: new Date()
     });
@@ -62,7 +73,7 @@ app.get('/profile/:id', (req, res) => {
         }
     });
     if (!found) {
-        res.status(400).json('not found')
+        res.status(400).json('not found');
     }
 });
 
@@ -72,14 +83,16 @@ app.post('/image', (req, res) => {
     database.users.forEach(user => {
         if (user.id === id) {
             found = true;
-            user.entries++
+            user.entries++;
             return res.json(user.entries);
         }
     });
     if (!found) {
-        res.status(400).json('not found')
+        res.status(400).json('not found');
     }
-})
+});
+
+
 
 app.listen(3000, () => {
     console.log('app is running');
